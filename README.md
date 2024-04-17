@@ -198,4 +198,111 @@ In the above code, we import the `pipe` function from `lodash/fp`. We then compo
 
 ### Currying
 
+Currying in functional programming is a process in which a function with multiple arguments is transformed into a sequence of functions, each with a single argument.
 
+For example, let's say we have a function that adds two numbers:
+
+```javascript
+function add(a, b) {
+  return a + b;
+}
+```
+
+We can call this function with two arguments like this: `add(1, 2)`, and it will return `3`.
+
+Now, let's curry this function:
+
+```javascript
+function curryAdd(a) {
+  return function(b) {
+    return a + b;
+  }
+}
+```
+
+Now, we can call the curried function like this: `curryAdd(1)(2)`, and it will also return `3`.
+
+The benefit of currying is that it allows you to create new functions by partially applying some arguments to the original function. For example, we can create a new function that adds 5 to its argument:
+
+```javascript
+const addFive = curryAdd(5);
+console.log(addFive(10)); // Outputs: 15
+```
+
+In this example, `addFive` is a new function that we created by partially applying the argument `5` to the `curryAdd` function. Now, `addFive(10)` is equivalent to `curryAdd(5)(10)`. This is a powerful technique that can make your code more flexible and reusable. It's widely used in functional programming and in JavaScript libraries such as Ramda and Lodash.
+
+Let's take a look at anoher example:
+
+```typescript
+// Wrap the input in the div, and remove any whitespace around the input and convert
+// the input to lowercase.
+
+import { compose, pipe } from "lodash/fp";
+
+let input = "  JavaScript  ";
+
+const trim = (str: string) => str.trim();
+const toLowerCase = (str: string) => str.toLowerCase();
+
+//  To combine these two functions into one function we can do the following:
+const wrapInDiv = (trimmedString: string) => `<div>${trimmedString}</div>`;
+const wrapInSpan = (trimmedString: string) => `<span>${trimmedString}</span>`;
+
+// The below function has combined the wrapInDiv and wrapInSpan functions into one function,
+// which can be used to wrap the input in either a div or a span. But when using the pipe function
+// we can only pass one argument to the function, so we need to create a new function that takes
+// the tag as an argument and returns a new function that takes the trimmedString as an argument.
+// This is called currying.
+const wrapCombined = (tag: string, trimmedString: string) =>
+  `<${tag}>${trimmedString}</${tag}>`;
+
+// Rather than the above function, we can create a curried function that takes the tag as an argument
+// and returns a new function that takes the trimmedString as an argument.
+const wrap = (tag: string) => (trimmedString: string) =>
+  `<${tag}>${trimmedString}</${tag}>`;
+
+// So over here, we have created a curried function that takes the tag as an argument and returns a new function
+// that takes the trimmedString as an argument. This is called currying.
+const transform = pipe(trim, toLowerCase, wrap("div"));
+
+const result = transform(input);
+
+console.log(result); // Output: <div>javascript</div>
+```
+
+In the above code, we have a function called `wrap` that takes the tag as an argument and returns a new function that takes the trimmed string as an argument. We can then use the `wrap` function to create new functions that wrap the input string in different tags. This makes the code more flexible and reusable. So to call this wrap function we can do the following:
+
+```typescript
+cont result = wrap("div")("JavaScript"); //Output: <div>JavaScript</div>
+```
+
+So we first pass in `div` as the wrap function's argument, and because the function is curried, it returns a new function that also takes/expects a string as an argument. We can then call this new function with the input string `JavaScript`.
+
+### Pure functions
+
+A pure function is a function that given the same input will always return the same output. It does not depend on any external state or variable. It does not modify any external state or variable. It does not have any side effects. There is also no mutation of parameters or variables. Pure functions are predictable and easy to test. They are also composable and can be used to build more complex functions. Pure functions a re self-documenting and easy to understand. Take a look at this example:
+
+```typescript
+function add(a: number, b: number): boolean {
+  return a > b;
+}
+
+console.log(add(1, 2)); // false
+
+```
+
+The above function is a pure function. It takes two numbers as input and returns the sum of the two numbers. It does not depend on any external state or variable. It does not modify any external state or variable. It does not have any side effects. It is a pure function.
+
+Now what if we don't use pure functions, and rather we compare the value with an external variable:
+
+```typescript
+let a = 10;
+
+function add(b: number): boolean {
+  return a > b;
+}
+
+console.log(add(5)); // Output: true
+```
+
+Although the function is working as we intended, but the moment we change the value of `a` the function will return a different value. This is because the function depends on an external state or variable. It is not a pure function. It is not predictable and can have side effects. One benefit of pure functions is that it is also cashable. We can cache the result of a pure function and reuse it later. This can help improve the performance of our application.
