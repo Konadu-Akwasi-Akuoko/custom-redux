@@ -434,3 +434,52 @@ console.log(person);
 ```
 
 So you see, by copying the nested object into a new object, we can achieve deep copying. This will make sure that the original object is not affected when we change the nested object. This is how we can avoid shallow copying in Javascript. But this approach can be cumbersome and error-prone. There are libraries like `immer` that can help us achieve deep copying in a more elegant way.
+
+### Updating Arrays
+
+There are many ways we can update arrays immutably, take a look at the following examples:
+
+```typescript
+const numbers = [1, 2, 3];
+
+// Adding 
+const updatedNumbers = [...numbers, 4, 5, 6];
+
+console.log(updatedNumbers); // Output: [1, 2, 3, 4, 5, 6]
+
+// To add an element at the beginning of the array
+
+const updatedNumbers2 = [0, ...numbers];
+
+console.log(updatedNumbers2); // Output: [0, 1, 2, 3]
+
+// To add an element at a specific index
+
+// First of all we need to find the index of the value where we want to add the element
+const index = numbers.indexOf(2);
+const updatedNumbers3 = [...numbers.slice(0, index), 4, ...numbers.slice(index-1)];
+
+console.log(updatedNumbers3); // Output: [1, 4, 3]
+```
+
+From the above code, we have an array of numbers `[1, 2, 3]`. We can add elements to the array by using the spread operator `...`. We can add elements at the beginning of the array, at the end of the array, or at a specific index in the array. To add a value at a specific index, we first find the index of the value where we want to add the element, and store it inside a variable. We then use the `slice` method to split the array into two parts, first of all we start at index 0 and end at the index where we want to insert the new value. Note that the second parameter of the `slice` method is not inclusive, but rather exclusive. We then use the `slice` method again to get the second part of the array starting from the index which we stored. We then spread the two slices of the array into a new array. This is because the `slice` method does not mutate the original array, but rather returns a new array, so we need to spread the two slices into a new array.
+
+To also delete a value, say `2` from the array, we can do the following:
+
+```typescript
+const updatedNumbers4 = numbers.filter((n) => n !== 2);
+
+console.log(updatedNumbers4); // Output: [1, 3]
+```
+
+This will return a new array with all the values that are not equal to `2`. This is how we can delete a value from an array immutably.
+
+To also update a value in an array, say we want to update the value `2` to `20`, we can do the following:
+
+```typescript
+const updatedNumbers5 = numbers.map((n) => (n === 2 ? 20 : n));
+
+console.log(updatedNumbers5); // Output: [1, 20, 3]
+```
+
+This will return a new array with all the values that are not equal to `2` as they are, but the value that is equal to `2` will be updated to `20`. This is because the `map` method accepts a function that takes each element of the array and returns a new value. In this case, we check if the element is equal to `2`, we return `20`, otherwise we return the element as it is.
