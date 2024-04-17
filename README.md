@@ -462,6 +462,8 @@ const updatedNumbers3 = [...numbers.slice(0, index), 4, ...numbers.slice(index-1
 console.log(updatedNumbers3); // Output: [1, 4, 3]
 ```
 
+Note that the `slice` method does not mutate the original array, but rather returns a new array. But that new array is a shallow copy of the original array. This means that if the array contains objects or arrays, then the original and the copied will share the same objects or arrays.
+
 From the above code, we have an array of numbers `[1, 2, 3]`. We can add elements to the array by using the spread operator `...`. We can add elements at the beginning of the array, at the end of the array, or at a specific index in the array. To add a value at a specific index, we first find the index of the value where we want to add the element, and store it inside a variable. We then use the `slice` method to split the array into two parts, first of all we start at index 0 and end at the index where we want to insert the new value. Note that the second parameter of the `slice` method is not inclusive, but rather exclusive. We then use the `slice` method again to get the second part of the array starting from the index which we stored. We then spread the two slices of the array into a new array. This is because the `slice` method does not mutate the original array, but rather returns a new array, so we need to spread the two slices into a new array.
 
 To also delete a value, say `2` from the array, we can do the following:
@@ -508,3 +510,5 @@ console.log(newBook!.toJS()); // Output: { title: 'Harry Potter', isPublished: t
 ```
 
 In the above code, we import the `Map` data structure from `immutable`. We then create a new `Map` object called `book` with a title property. We then create a function called `publish` that takes a `Map` object as an argument and returns a new `Map` object with the `isPublished` property set to `true`. We then call the `publish` function with the `book` object and store the result in a new variable called `newBook`. We then log the `book` object and the `newBook` object to the console. We can see that the `book` object is not mutated, but rather a new `Map` object is created with the `isPublished` property set to `true`. This is how we can enforce immutability in our applications using `immutable.js`.
+
+### Immer
