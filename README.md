@@ -483,3 +483,28 @@ console.log(updatedNumbers5); // Output: [1, 20, 3]
 ```
 
 This will return a new array with all the values that are not equal to `2` as they are, but the value that is equal to `2` will be updated to `20`. This is because the `map` method accepts a function that takes each element of the array and returns a new value. In this case, we check if the element is equal to `2`, we return `20`, otherwise we return the element as it is.
+
+### Enforcing Immutability
+
+Although javascript supports the functional way of building applications, it does not enforce immutability. This means that you can still mutate data in javascript. But there are libraries that can help us enforce immutability. One of such libraries is `immutable.js` and `immer`.
+
+### Immutable.js
+
+Immutable.js is a library that provides immutable data structures for javascript. It provides a set of immutable data structures that can help us enforce immutability in our applications. It provides List, Map, Set, Stack, OrderedMap, OrderedSet, Record, Range, Repeat, Seq, Collection, and Iterable. These data structures are immutable and can help us build applications in a more functional way. Let's take a look at an example of how we can use the List data structure in Immutable.js:
+
+```typescript
+import Immutable, { Map } from "immutable";
+
+let book = Map({ title: "Harry Potter" });
+
+function publish(book: Immutable.Map<any, any>) {
+  return book.set("isPublished", true);
+}
+
+const newBook = publish(book);
+
+console.log(book.toJS()); // Output: { title: 'Harry Potter' }
+console.log(newBook!.toJS()); // Output: { title: 'Harry Potter', isPublished: true }
+```
+
+In the above code, we import the `Map` data structure from `immutable`. We then create a new `Map` object called `book` with a title property. We then create a function called `publish` that takes a `Map` object as an argument and returns a new `Map` object with the `isPublished` property set to `true`. We then call the `publish` function with the `book` object and store the result in a new variable called `newBook`. We then log the `book` object and the `newBook` object to the console. We can see that the `book` object is not mutated, but rather a new `Map` object is created with the `isPublished` property set to `true`. This is how we can enforce immutability in our applications using `immutable.js`.
