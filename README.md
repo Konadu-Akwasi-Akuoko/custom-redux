@@ -306,3 +306,131 @@ console.log(add(5)); // Output: true
 ```
 
 Although the function is working as we intended, but the moment we change the value of `a` the function will return a different value. This is because the function depends on an external state or variable. It is not a pure function. It is not predictable and can have side effects. One benefit of pure functions is that it is also cashable. We can cache the result of a pure function and reuse it later. This can help improve the performance of our application.
+
+### Immutability
+
+Immutability simply means that once you create an object/data that data cannot be changed. If you want to change you need to copy it first and change that copy. This is a fundamental concept in functional programming. It makes our code more predictable and easier to understand. It also helps us avoid bugs and side effects. Let's take a look at an example of a direct mutation:
+
+```typescript
+let person = { name: "John", age: 30 };
+
+// We can change the age of the person object like this:
+person.age = 40;
+
+console.log(person); // Output: { name: "John", age: 40 }
+```
+
+In the above code, we have an object called `person` with two properties `name` and `age`. We can change the `age` property of the `person` object directly. This is called mutation. It is not recommended in functional programming. Instead, we should create a new object with the updated properties. Let's take a look at how we can do this:
+
+```typescript
+let person = { name: "John", age: 30 };
+
+// We can change the age of the person object like this:
+let newPerson = { ...person, age: 40 };
+
+console.log(person); // Output: { name: "John", age: 30 }
+console.log(newPerson); // Output: { name: "John", age: 40 }
+```
+
+In the above code, we have an object called `person` with two properties `name` and `age`. We can create a new object called `newPerson` with the updated `age` property. We use the spread operator `...` to copy all the properties of the `person` object to the `newPerson` object. We then update the `age` property of the `newPerson` object. This is how we can achieve immutability in Javascript.
+
+> A common misconception about the const keyword: The const keyword in Javascript does not make the object immutable. It only makes the reference to the object immutable. This means that you cannot reassign the variable to a new object. But you can still change the properties of the object, thus you can assign `person.age` to a different value and that will still work. So the const keyword does not guarantee immutability.
+
+So the bottom line here is, when building applications in Redux, you should not mutate data, because this is a fundamental principle in redux. You should always create new objects with the updated properties. This will make your code more predictable and easier to understand.
+
+One problem with copying objects into new objects is shallowing copying. This means that if we have nested data, and we use the spread operator to copy the object into a new updated object, and we directly mutate the nested data, both the original object and the new object will be affected. This is because the spread operator only does a shallow copy. Take a look at this example:
+
+```typescript
+const person = {
+  name: "John",
+  address: {
+    city: "New York",
+    country: "USA",
+  },
+};
+
+console.log(person);
+
+// Output:
+// {
+//   name: 'John',
+//   address: { city: 'New York', country: 'USA' }
+// }
+
+// Now let's do a shallow copy
+const updated = {
+  ...person,
+  name: "Bob",
+};
+
+// Now let's change the address of the updated address city's to "Chicago"
+updated.address.city = "Chicago";
+
+console.log(updated);
+// Output:
+// {
+//   name: 'Bob',
+//   address: { city: 'Chicago', country: 'USA' }
+// }
+
+// Now let's also log the original person object
+console.log(person);
+
+// Output:
+// {
+//   name: 'John',
+//   address: { city: 'Chicago', country: 'USA' }
+// }
+```
+
+From the above code we clearly see that the original person object is also affected when we change the address of the updated object. This is because the spread operator only does a shallow copy. It does not do a deep copy. To solve this problem, we need to also reassign the nested object. We can use the spread operator to copy the nested object into a new object. This is how we can achieve deep copying. Take a look at this example:
+
+```typescript
+const person = {
+  name: "John",
+  address: {
+    city: "New York",
+    country: "USA",
+  },
+};
+
+console.log(person);
+
+// Output:
+// {
+//   name: 'John',
+//   address: { city: 'New York', country: 'USA' }
+// }
+
+// Now let's do a deep copy
+
+const updated = {
+  ...person,
+  address: {
+    ...person.address,
+  },
+};
+
+// Now let's change the address of the updated address city's to "Chicago"
+
+updated.address.city = "Chicago";
+
+console.log(updated);
+
+// Output:
+// {
+//   name: 'John',
+//   address: { city: 'Chicago', country: 'USA' }
+// }
+
+// Now let's also log the original person object
+console.log(person);
+
+// Output:
+// {
+//   name: 'John',
+//   address: { city: 'New York', country: 'USA' }
+// }
+```
+
+So you see, by copying the nested object into a new object, we can achieve deep copying. This will make sure that the original object is not affected when we change the nested object. This is how we can avoid shallow copying in Javascript. But this approach can be cumbersome and error-prone. There are libraries like `immer` that can help us achieve deep copying in a more elegant way.
