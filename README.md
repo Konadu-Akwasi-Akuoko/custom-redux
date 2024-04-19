@@ -710,4 +710,19 @@ From the above code, we have provided the initial state of the store as an empty
 
 ### Creating the Store
 
+After creating our reducer function we then proceed to create our store.
 
+```typescript
+import { legacy_createStore as createStore } from "redux";
+import { reducer } from "./reducer";
+
+export const store = createStore(reducer);
+```
+
+From the above code, we import the `createStore` function from `redux`. We then import the `reducer` function that we created earlier. We then create a store using the `createStore` function and pass in the `reducer` function as an argument. This will create a store with the initial state of the store as an empty array `[]` and the reducer function that we created earlier.
+
+### Dispatching actions
+
+Now that we have created our store, we can now dispatch actions to the store to update the state of the store. We can dispatch actions using the `dispatch` method of the store. Let's take a look at how we can dispatch actions to the store:
+
+```typescript
