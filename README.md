@@ -1,4 +1,4 @@
-# Building Our Own Custom Redux
+# Redux All You Need To Know
 
 This is a simple implementation of the popular Javascript Library called [Redux](https://redux.js.org/). This implementation is a simplified version of the original Redux library. It is a simple implementation that is meant to help you understand how Redux works under the hood.
 
@@ -13,9 +13,7 @@ Building our own custom Redux library will **help us understand how Redux works 
 ## Table of Contents
 
 1. [Functional Programming](#functional-programming)
-2. [Fundamentals of Redux](#fundamentals-of-redux)
-3. [Building Our Own Custom Redux](#building-our-own-custom-redux)
-4. [Debugging Redux Applications](#debugging-redux-applications)
+2. [Redux](#redux)
 
 ## Functional Programming
 
