@@ -726,3 +726,86 @@ From the above code, we import the `createStore` function from `redux`. We then 
 Now that we have created our store, we can now dispatch actions to the store to update the state of the store. We can dispatch actions using the `dispatch` method of the store. Let's take a look at how we can dispatch actions to the store:
 
 ```typescript
+import { store } from "./store";
+
+const unsubscribe = store.subscribe(() => {
+  console.log("Store changed!", store.getState());
+});
+
+store.dispatch({
+  type: "ADD_BUG",
+  payload: { id: 1, description: "Bug 1", resolved: false },
+});
+
+store.dispatch({
+  type: "ADD_BUG",
+  payload: { id: 2, description: "Bug 2", resolved: false },
+});
+
+store.dispatch({
+  type: "RESOLVE_BUG",
+  payload: { id: 1 },
+});
+
+console.log(store.getState());
+
+store.dispatch({
+  type: "REMOVE_BUG",
+  payload: { id: 2 },
+});
+
+unsubscribe();
+```
+
+From the above code, we import the `store` that we created earlier. We then subscribe to the store using the `subscribe` method of the store. The `subscribe` method takes a callback function that will be called whenever the state of the store changes. We then dispatch actions to the store using the `dispatch` method of the store. We dispatch an `ADD_BUG` action to add a bug to the store. We then dispatch a `RESOLVE_BUG` action to mark a bug as resolved in the store. We then log the state of the store to the console. We then dispatch a `REMOVE_BUG` action to remove a bug from the store. We then log the state of the store to the console.
+
+Always remember to unsubscribe from the store when you are done with the store. This is to prevent memory leaks in your application.
+
+### Using `combineReducers()`
+
+In a real-world application, we will have multiple slices of the store. Each slice will have its own reducer function. We can use the `combineReducers` function from `redux` to combine multiple reducer functions into a single reducer function. Let's take a look at how we can use the `combineReducers` function to combine multiple reducer functions into a single reducer function. We will start by creating a new reducer function:
+
+```typescript
+import { ADD_USER, REMOVE_USER } from "./actionTypes";
+
+export function customerReducer(
+  state: { name: string; age: number; id: number }[] = [],
+  action: { type: string; payload: { name?: string; age?: number; id: number } }
+) {
+  switch (action.type) {
+    case ADD_USER:
+      return [...state, { ...action.payload }];
+    case REMOVE_USER:
+      return state.filter((user: any) => user.id !== action.payload.id);
+    default:
+      return state;
+  }
+}
+```
+
+From the above code, we have created a new reducer function called `customerReducer`. This reducer function takes in the current state of the store and an action. But note we are not getting the whole store over here, rather we will be actually getting the slice of the store that we are interested in, and that will be the `customers` object in our whole store object. We then use a `switch` statement to check the `type` of action. If the `type` of action is `ADD_USER`, we add a new user to the store. If the `type` of action is `REMOVE_USER`, we remove a user from the store. If the `type` of action is not `ADD_USER` or `REMOVE_USER`, we return the current state of the store.
+
+Now to combine the `bugReducer` and the `customerReducer` into a single reducer function, we can use the `combineReducers` function from `redux`. Let's take a look at how we can use the `combineReducers` function to combine the `bugReducer` and the `customerReducer` into a single reducer function:
+
+```typescript
+import { combineReducers, legacy_createStore as createStore } from "redux";
+import { bugReducer } from "./reducer";
+import { customerReducer } from "./customerReducer";
+
+const rootReducer = combineReducers({
+  bugs: bugReducer,
+  customers: customerReducer,
+});
+export const store = createStore(rootReducer);
+```
+
+From the above code, we import the `combineReducers` function from `redux`. We then import the `bugReducer` and the `customerReducer` that we created earlier. We then use the `combineReducers` function to combine the `bugReducer` and the `customerReducer` into a single reducer function called `rootReducer`. We then create a store using the `createStore` function and pass in the `rootReducer` function as an argument. This will create a store with the initial state of the store as:
+
+```typescript
+{
+  bugs: [],
+  customers: [],
+}
+```
+
+Now we have a single reducer function that combines the `bugReducer` and the `customerReducer` into a single reducer function. This makes it easier to manage the state of the store in a more organized way. And note that when working with the reducer function, the state argument of the reducer function will only return the slice of the store that we are interested in. So in the `bugReducer` function, the state argument will only return the `bugs` slice of the store. And in the `customerReducer` function, the state argument will only return the `customers` slice of the store.

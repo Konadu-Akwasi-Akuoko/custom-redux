@@ -1,4 +1,9 @@
-import { legacy_createStore as createStore } from "redux";
-import { reducer } from "./reducer";
+import { combineReducers, legacy_createStore as createStore } from "redux";
+import { bugReducer } from "./reducer";
+import { customerReducer } from "./customerReducer";
 
-export const store = createStore(reducer);
+const rootReducer = combineReducers({
+  bugs: bugReducer,
+  customers: customerReducer,
+});
+export const store = createStore(rootReducer);
