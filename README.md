@@ -612,4 +612,102 @@ Let's start listing the steps to create our redux store:
 - Create a reducer function.
 - Set up the store.
 
+### Designing the store
+
+In a simple bug tracking app, we can use this structure as a store:
+
+```typescript
+{
+  bugs: [
+    { id: 1, description: "Bug 1", resolved: false },
+    { id: 2, description: "Bug 2", resolved: false },
+    { id: 3, description: "Bug 3", resolved: false },
+  ];
+  currentUser : {}
+}
+```
+
+From the above store, we have a `bugs` property that is an array of bugs. Each bug has an `id`, `description`, and `resolved` property. We also have a `currentUser` property that is an object that contains the current user of the application, which we will set the currentUser when the user logs in.
+
+Now let's introduce a new terminology called a `slice`. A slice is a part of the store that contains a specific part of the state. In our store, we have two slices, the `bugs` slice and the `currentUser` slice. Each slice contains a specific part of the state of the application. So we can say that in an object tree a slice is one level down in the tree.
+
+### Defining the actions
+
+Now the question is what are some of the actions that we can perform in our bug tracking app? We can have the following actions:
+
+- Add a Bug
+- Mark as Resolved
+- Delete a Bug
+
+So an action is just a plain javascript object that defines what has happened in the application. It has a `type` property that describes the action that we want to perform and a `payload` property that contains the data that we want to update in the store. So let's define the actions that we can perform in our bug tracking app:
+
+```typescript
+{
+  type: "ADD_BUG",
+  payload: { id: 1, description: "Bug 1" , resolved: false }
+}
+
+{
+  type : "REMOVE_BUG",
+  payload: { id: 1 }
+}
+
+{
+  type: "RESOLVE_BUG",
+  payload: { id: 1 }
+}
+```
+
+From the above code we have defined three actions that we can perform in our bug tracking app. We have the `ADD_BUG` action that adds a bug to the store. We have the `REMOVE_BUG` action that removes a bug from the store. We have the `RESOLVE_BUG` action that marks a bug as resolved in the store. Each action has a `type` property that describes the action that we want to perform and a `payload` property that contains the data that we want to update or add in the store.
+
+### Creating a Reducer
+
+Now as we said earlier, a reducer is a function that takes in 2 arguments, the current state of the store and an action, and then returns a new state based on the action that we want to perform. So let's create a reducer function that will take in the current state of the store and an action, and then return a new state based on the action that we want to perform:
+
+```typescript
+export function reducer(state: any, action: { type: string; payload: any }) {
+  switch (action.type) {
+    case "ADD_BUG":
+      return [...state, action.payload];
+    case "REMOVE_BUG":
+      return state.filter((bug: any) => bug.id !== action.payload.id);
+    case "RESOLVE_BUG":
+      return state.map((bug: any) =>
+        bug.id === action.payload.id ? { ...bug, resolved: true } : bug
+      );
+    default:
+      return state;
+  }
+}
+```
+
+From the above code, we have created a reducer function that takes in the current state of the store and an action. We then use a `switch` statement to check the `type` of action.
+
+- If the `type` of action is `ADD_BUG`, we add a new bug to the store. We use the spread operator `...` to copy the current state of the store into a new array and then add the new bug to the array.
+- If the `type` of action is `REMOVE_BUG`, we remove a bug from the store. We use the `filter` method to filter out the bug that we want to remove from the store. Remember the filter method does not mutate the original array, but rather returns a new array. But this methods does a shallow copy, so if the array contains objects or arrays, then the original and the copied will share the same reference address of the objects or arrays.
+- If the `type` of action is `RESOLVE_BUG`, we mark a bug as resolved in the store. We use the `map` method to map over the array of bugs and then update the bug that we want to mark as resolved. If we find a value that matches the id of the bug that we want to mark as resolved, we copy the bug into a new object and then update the `resolved` property of the bug to `true`. If the value does not match the id of the bug that we want to mark as resolved, we return the bug as it is.
+
+Now note that the reducer function will be called by the store, in it's instantiating, so we will need to provide the initial state of the store in the reducer. So let's provide the initial state of the store in the reducer function:
+
+```typescript
+export function reducer(state: any = [], action: { type: string; payload: any }) {
+  switch (action.type) {
+    case "ADD_BUG":
+      return [...state, action.payload];
+    case "REMOVE_BUG":
+      return state.filter((bug: any) => bug.id !== action.payload.id);
+    case "RESOLVE_BUG":
+      return state.map((bug: any) =>
+        bug.id === action.payload.id ? { ...bug, resolved: true } : bug
+      );
+    default:
+      return state;
+  }
+}
+```
+
+From the above code, we have provided the initial state of the store as an empty array `[]`. This is the initial state of the store. When the store is instantiated, the reducer function will be called with the initial state of the store and an action. If the state is not provided, the reducer function will use the initial state of the store as an empty array `[]`.
+
+### Creating the Store
+
 
