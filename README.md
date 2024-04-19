@@ -512,3 +512,104 @@ console.log(newBook!.toJS()); // Output: { title: 'Harry Potter', isPublished: t
 In the above code, we import the `Map` data structure from `immutable`. We then create a new `Map` object called `book` with a title property. We then create a function called `publish` that takes a `Map` object as an argument and returns a new `Map` object with the `isPublished` property set to `true`. We then call the `publish` function with the `book` object and store the result in a new variable called `newBook`. We then log the `book` object and the `newBook` object to the console. We can see that the `book` object is not mutated, but rather a new `Map` object is created with the `isPublished` property set to `true`. This is how we can enforce immutability in our applications using `immutable.js`.
 
 ### Immer
+
+Immer is a library that provides a simple and effective way to work with immutable data in javascript. It allows us to write code that looks like it is mutating data, but under the hood, it is creating a new copy of the data. This makes our code more readable and easier to understand. Let's take a look at an example of how we can use Immer to work with immutable data:
+
+```typescript
+import { produce } from "immer";
+
+let book = { title: "Harry Potter" };
+
+function publish(book: any) {
+  return produce(book, (draftBook : any) => {
+    draftBook.isPublished = true;
+  });
+}
+
+const newBook = publish(book);
+
+console.log(book); // Output: { title: 'Harry Potter' }
+console.log(newBook); // Output: { title: 'Harry Potter', isPublished: true }
+```
+
+In the above code, we import the `produce` function from `immer`. We then create a new object called `book` with a title property. We then create a function called `publish` that takes an object as an argument and returns a new object with the `isPublished` property set to `true`. We use the `produce` function to create a new object based on the `book` object. We then update the `draftBook` object inside the `produce` function. We then log the `book` object and the `newBook` object to the console. We can see that the `book` object is not mutated, but rather a new object is created with the `isPublished` property set to `true`. This is how we can work with immutable data in javascript using `immer`.
+
+## Redux
+
+Now after understanding all the basics of functional programming, we can now dive into Redux. Redux is a predictable state container for javascript applications. It helps us manage the state of our application in a predictable way. It is based on these principles or architectures:
+
+- Single source of truth (store): The state of the whole application is stored in an object tree within a single store. This makes it easier to debug and inspect the state of the application. So this means that all data inside our application is stored inside a single object called the store. We can not directly mutate or change the state of the store, because redux is built on the fundamental principle of immutability(functional programming). So this means that we cannot write code like this:
+  
+  ```Typescript
+  store.currentUser = { name: "John", age: 30 };
+  ```
+  
+  In the above code we are directly mutating the value of the `currentUser` which is found in the store, and this is not allowed in redux. So to update the store we will need to write a function that will take the current state of the store and return an updated store with updated values.
+
+- A function to compute the new state of the store (reducer): So in that function that we will write we need to use the spread operator to copy the current state of the store into a new object, and then update the values of the new object. Or we can use libraries like `immer` to help us update the store in a more elegant way. So this function that we write is called a **`reducer`** function.
+
+  The term "reducer" comes from the concept of a **reduce function** in functional programming. A reduce function in functional programming is used to reduce a collection of values down to a single value.
+
+  In Redux, a **reducer** function serves a similar purpose. It takes the current state and an action, and then returns a new state, effectively reducing the state and action into a new state. It's like it's "reducing" the complexity of state management by providing a predictable way to handle state changes.
+  
+  So, the name "reducer" in Redux is inspired by the reduce function in functional programming. It's a way of describing a function that takes a collection of values (the current state and an action), and reduces them down to a single value (the new state). This aligns with the principles of immutability and pure functions, which are core concepts in Redux. Here is an example of how a reducer function looks like:
+
+  ```typescript
+  function reducer(store) {
+    const update =  { ...store };
+    return update;
+  }
+  ```
+
+  In the above code, we have a function called `reducer` that takes the current state of the store as an argument. We then copy the current state of the store into a new object called `update`. We then return the `update` object.
+  
+- What to update (actions): But the question is, if we want to update a part of the store, how will the reducer function know which part of the store to update? This is where **`actions`** come in.
+
+  So basically an action will tell the reducer function what part of the plain object store to update. Now based on the action the reducer function will know which part of the store to update. The action is an object containing 2 values, the `type` and the `payload` This is how an action looks like:
+
+  ```typescript
+  const action = {
+    type: "UPDATE_USER",
+    payload: { name: "John", age: 30 },
+  };
+
+  function reducer(store, action) {
+    switch (action.type) {
+      case "UPDATE_USER":
+        return { ...store, user: action.payload };
+      default:
+        return store;
+    }
+  }
+  ```
+
+  From the above code you saw that the action is also a javascript object, that contains the `type` of action and the `payload`. The `type` of action is a string that describes the action that we want to perform. The `payload` is the data that we want to update in the store (the new data). So in the reducer function we use a `switch` statement to check the `type` of action. If the `type` of action is `UPDATE_USER`, we update the `user` property of the store with the `payload` data. If the `type` of action is not `UPDATE_USER`, we return the current state of the store.
+
+Now from the above we now know 3 basic concepts in Redux. First of all we have the store, which is a plain object that contains all the data of our application. Secondly we have the reducer function, which is a function that takes the current state of the store and an action, and computes a new state based on the action that we want to perform. And lastly we have the action, which is an object that describes the action that we want to perform and the data that we want to update in the store (type and payload).
+
+Now how do all these building blocks work together?
+
+1. Updating the store or the state in Redux always starts with an action. You will need to dispatch an action to update the store. The action is an object that describes the action that we want to perform and the data that we want to update in the store (type and payload).
+2. The store takes in the action and the current state of the store and passes it to the reducer function.
+3. The reducer function then computes a new state based on the action that we want to perform. The reducer function then returns the new state of the store.
+4. The store then updates the state of the store with the new state, thus replaces the old state with the new state of the store. This is how all the building blocks work together in Redux.
+
+Now the question is why don't we call the reducer function, but rather dispatch an action to the store and the store calls the reducer function for us? This is because the store is a single source of truth. It is the only place where we can update the state of the store. This makes it easier to debug and inspect the state of the application. This is why we dispatch an action to the store and the store calls the reducer function for us.
+
+### Redux Store
+
+Now let's build our own redux store. We will build a simple bug tracking redux store that will have the following features:
+
+1. Add a bug.
+2. Remove a bug.
+3. Resolve a bug.
+4. Set a bug to in progress.
+
+Let's start listing the steps to create our redux store:
+
+- Design the store.
+- Design the actions.
+- Create a reducer function.
+- Set up the store.
+
+
