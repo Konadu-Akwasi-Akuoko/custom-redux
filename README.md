@@ -809,3 +809,229 @@ From the above code, we import the `combineReducers` function from `redux`. We t
 ```
 
 Now we have a single reducer function that combines the `bugReducer` and the `customerReducer` into a single reducer function. This makes it easier to manage the state of the store in a more organized way. And note that when working with the reducer function, the state argument of the reducer function will only return the slice of the store that we are interested in. So in the `bugReducer` function, the state argument will only return the `bugs` slice of the store. And in the `customerReducer` function, the state argument will only return the `customers` slice of the store.
+
+Now let's see how we can use our store.
+
+```typescript
+import { ADD_BUG, ADD_USER, REMOVE_BUG, REMOVE_USER, RESOLVE_BUG } from "./actionTypes";
+import { store } from "./store";
+
+const unsubscribe = store.subscribe(() => {
+  console.log("Store changed!", store.getState());
+});
+
+store.dispatch({
+  type: ADD_BUG,
+  payload: { id: 1, description: "Bug 1", resolved: false },
+});
+
+store.dispatch({
+    type: ADD_USER,
+    payload: { name: "John Doe", age: 25, id: 1 },
+})
+
+store.dispatch({
+  type: ADD_BUG,
+  payload: { id: 2, description: "Bug 2", resolved: false },
+});
+
+store.dispatch({
+    type: ADD_USER,
+    payload: { name: "Jane Doe", age: 22, id: 2 },
+})
+
+store.dispatch({
+    type: REMOVE_USER,
+    payload: { id: 1 },
+})
+
+store.dispatch({
+  type: RESOLVE_BUG,
+  payload: { id: 1 },
+});
+
+
+store.dispatch({
+  type: REMOVE_BUG,
+  payload: { id: 2 },
+});
+
+unsubscribe();
+```
+
+From the above code, we import the `store` that we created earlier. We then subscribe to the store using the `subscribe` method of the store. We then dispatch actions to the store using the `dispatch` method of the store. We dispatch an `ADD_BUG` action to add a bug to the store. We then dispatch an `ADD_USER` action to add a user to the store. We then dispatch an `ADD_BUG` action to add another bug to the store. We then dispatch an `ADD_USER` action to add another user to the store. We then dispatch a `REMOVE_USER` action to remove a user from the store. We then dispatch a `RESOLVE_BUG` action to mark a bug as resolved in the store. We then dispatch a `REMOVE_BUG` action to remove a bug from the store. We then unsubscribe from the store.
+
+And this is the output in our console:
+
+```typescript
+Store changed! {
+  bugs: [
+    {
+      id: 1,
+      description: "Bug 1",
+      resolved: false,
+    }
+  ],
+  customers: [],
+}
+Store changed! {
+  bugs: [
+    {
+      id: 1,
+      description: "Bug 1",
+      resolved: false,
+    }
+  ],
+  customers: [
+    {
+      name: "John Doe",
+      age: 25,
+      id: 1,
+    }
+  ],
+}
+Store changed! {
+  bugs: [
+    {
+      id: 1,
+      description: "Bug 1",
+      resolved: false,
+    }, {
+      id: 2,
+      description: "Bug 2",
+      resolved: false,
+    }
+  ],
+  customers: [
+    {
+      name: "John Doe",
+      age: 25,
+      id: 1,
+    }
+  ],
+}
+Store changed! {
+  bugs: [
+    {
+      id: 1,
+      description: "Bug 1",
+      resolved: false,
+    }, {
+      id: 2,
+      description: "Bug 2",
+      resolved: false,
+    }
+  ],
+  customers: [
+    {
+      name: "John Doe",
+      age: 25,
+      id: 1,
+    }, {
+      name: "Jane Doe",
+      age: 22,
+      id: 2,
+    }
+  ],
+}
+Store changed! {
+  bugs: [
+    {
+      id: 1,
+      description: "Bug 1",
+      resolved: false,
+    }, {
+      id: 2,
+      description: "Bug 2",
+      resolved: false,
+    }
+  ],
+  customers: [
+    {
+      name: "Jane Doe",
+      age: 22,
+      id: 2,
+    }
+  ],
+}
+Store changed! {
+  bugs: [
+    {
+      id: 1,
+      description: "Bug 1",
+      resolved: true,
+    }, {
+      id: 2,
+      description: "Bug 2",
+      resolved: false,
+    }
+  ],
+  customers: [
+    {
+      name: "Jane Doe",
+      age: 22,
+      id: 2,
+    }
+  ],
+}
+Store changed! {
+  bugs: [
+    {
+      id: 1,
+      description: "Bug 1",
+      resolved: true,
+    }
+  ],
+  customers: [
+    {
+      name: "Jane Doe",
+      age: 22,
+      id: 2,
+    }
+  ],
+}
+```
+
+### Action Creators
+
+Action creators are functions that create actions. They are used to encapsulate the logic of creating actions. This makes it easier to create actions in our application. Let's take a look at how we can create action creators in our bug tracking app:
+
+```typescript
+import { ADD_BUG, REMOVE_BUG, RESOLVE_BUG } from "./actionTypes";
+
+export function addBug(payload: { id: number; description: string; resolved: boolean }) {
+  return {
+    type: ADD_BUG,
+    payload,
+  };
+}
+
+export function removeBug(payload: { id: number }) {
+  return {
+    type: REMOVE_BUG,
+    payload,
+  };
+}
+
+export function resolveBug(payload: { id: number }) {
+  return {
+    type: RESOLVE_BUG,
+    payload,
+  };
+}
+```
+
+From the above code, we have created action creators for the `ADD_BUG`, `REMOVE_BUG`, and `RESOLVE_BUG` actions. Each action creator is a function that takes a `payload` as an argument and returns an action object with the `type` and `payload` properties. This makes it easier to create actions in our application. To use these action creators, we can import them into our application and call them to create actions:
+
+```typescript
+import { addBug, removeBug, resolveBug } from "./actionCreators";
+
+store.dispatch(addBug({ id: 1, description: "Bug 1", resolved: false }));
+store.dispatch(addBug({ id: 2, description: "Bug 2", resolved: false }));
+store.dispatch(resolveBug({ id: 1 }));
+store.dispatch(removeBug({ id: 2 }));
+```
+
+Now we can use the action creators to create actions in our application. This makes it easier to create actions in our application and encapsulates the logic of creating actions.
+
+Now we have thoroughly reviewed the concepts that redux is based on. And we can use this as the basics to learn more advance concepts in redux. Or we can turn to [redux-toolkit](https://redux-toolkit.js.org/) to make the job way easier for us.
